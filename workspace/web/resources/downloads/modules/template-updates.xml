@@ -1,27 +1,62 @@
 <app>
 <env>
-app.title=ETRACS 2.5 build 05 20200602 
-app.host=localhost:8070
+app.title=ETRACS 2.5 build 05 20200602 patch v255-03019-012 (Municipality Of Asuncion)
+app.host=192.168.254.129:8070
 app.cluster=osiris3
 app.context=etracs25
-app.help=http://localhost:8080/help
+app.help=http://192.168.254.129:8080/help
 app.loader=com.rameses.osiris2.client.OsirisAppLoader
 readTimeout=300000
 connectionTimeout=5000
 filemgmt.enabled=false
 
-ws.host=localhost:8060
-#res.host=localhost
+ws.host=192.168.254.129:8060
+#res.host=192.168.254.129
 
-app.custom=carmen
-report.custom=carmen
+app.custom=asuncion
+report.custom=asuncion
 
-socketio.host=localhost:7080
+socketio.host=192.168.254.129:7080
 
-entity.app.host=localhost:8070
+entity.app.host=192.168.254.129:8070
 entity.app.context=etracs25
 </env>
 <modules>
+	<!-- custom main libraries -->
+	<module file="custom/etracs-asuncion-newpermit.jar" version="1.3"/>
+	<module file="custom/gov-lgu-ddn-asuncion-bplsbilling.jar" version="1.0"/>
+	<module file="custom/gov-lgu-ddn-asuncion-brgysharereport.jar" version="1.0"/>
+	<module file="custom/gov-lgu-ddn-asuncion-ctc.jar" version="1.0"/>
+	<module file="custom/gov-lgu-asuncion-etracs-rptis-landtax-report.jar" version="1.1"/>
+	<module file="custom/lgu-asuncion-delinquent-report.jar" version="1.0"/>
+	<module file="custom/gov-lgu-ddn-rptcompromisestatementofaccount.jar" version="2.55"/>
+	<!--module file="custom/gov-lgu-ddn-rptis-report.jar" version="1.1"/-->
+	<module file="custom/gov-lgu-ddn-asuncion-taxclearance.jar" version="1.11"/>
+	<module file="custom/etracs-asuncion-customapplicatiocompromise.jar" version="1.4"/>
+	<module file="custom/gov-lgu-ddn-noticeofcancellationreport.jar" version="1.02"/>
+	<module file="custom/etracs-asuncion-nod.jar" version="1.1"/>
+	<module file="custom/lgu-asuncion-assessment.jar" version="1.0"/>
+	<module file="custom/gov-lgu-ddn-noticeofassessmentreport.jar" version="1.03"/>
+	<module file="custom/gov-lgu-ddn-faaslandmodified.jar" version="2.55"/> 
+	<module file="custom/gov-lgu-ddn-taxdecmodified.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-faasbldgmodified.jar" version="2.56"/>
+	<module file="custom/gov-lgu-ddn-faasmachmodified.jar" version="2.60"/>
+	<module file="custom/gov-lgu-ddn-faasmiscmodified.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-assessmentrolltaxable.jar" version="1.00"/> 
+	<module file="custom/gov-lgu-ddn-assessmentrollexempt.jar" version="1.00"/> 
+	<module file="custom/gov-lgu-ddn-assessmentrollcontinuousexempt.jar" version="1.00"/>
+	<module file="custom/gov-lgu-ddn-assessmentrollcontinuoustaxable.jar" version="1.00"/>
+	<module file="custom/gov-lgu-ddn-tmcrmodified.jar" version="1.00"/>
+	<module file="custom/gov-lgu-ddn-asuncion.jar" version="1.37"/>
+	<module file="custom/gov-lgu-ddn-accomplishmentrealpropertyassessmentreport.jar" version="2.55"/>
+	<module file="custom/rptcompromise_municipal.jar" version="1.00"/>
+	
+	<module file="custom/gov-lgu-ddn-land_specificclass_listing.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-monthlyassessmentreport.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-reportonrealpropertyassessment.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-consolidationsummaryreportmodified.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-subdivisionsummaryreportmodified.jar" version="2.55"/>
+	<module file="custom/gov-lgu-ddn-subdivisionsummaryreportmodified.jar" version="2.55"/>
 
 	<!-- core -->
 	<module file="core/osiris2-client-themes.jar" version="2.50"/>
@@ -78,18 +113,21 @@ entity.app.context=etracs25
 	<module file="bpls/rameses-gov-etracs-bpls-ceo.jar" version="2.50"/>
 
     <!-- rptis common -->
-	<module file="rptis/rameses-gov-etracs-rptis.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-report.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-landtax.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-landtax-report.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-transmittal.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-sync.jar" version="2.50" />
+	<module file="rptis/rameses-gov-etracs-rptis.jar" version="2.58"/>
+	<module file="rptis/rameses-gov-etracs-rptis-report.jar" version="2.57"/>
+	<module file="rptis/rameses-gov-etracs-rptis-landtax.jar" version="2.57"/>
+	<module file="rptis/rameses-gov-etracs-rptis-landtax-report.jar" version="2.57"/>
+	<module file="rptis/rameses-gov-etracs-rptis-transmittal.jar" version="2.57"/>
+	<module file="rptis/rameses-gov-etracs-rptis-sync.jar" version="2.58"/>
 
-	<!-- rptis lgu specific -->
-	<module file="rptis/rameses-gov-etracs-rptis-municipality.jar" version="2.50"/>
-	<module file="rptis/rameses-gov-etracs-rptis-landtax-auction.jar" version="2.50" />
+    <!-- rptis lgu specific -->
+	<module file="rptis/rameses-gov-etracs-rptis-municipality.jar" version="2.57"/>
+	<module file="rptis/rameses-gov-etracs-rptis-landtax-auction.jar" version="2.56" />
 
 	<!-- queue -->
 	<module file="queue/rameses-queueing.jar" version="2.50"/> 
+
+	<!-- ctc -->
+	<module file="ctc/rameses-gov-etracs-ctc.jar" version="2.50"/>	
 </modules>
 </app>
