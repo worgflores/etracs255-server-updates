@@ -127,7 +127,7 @@ entity.app.context=etracs25
 	<module file="rptis/rameses-gov-etracs-rptis-report.jar" version="2.50" />
 	<module file="rptis/rameses-gov-etracs-rptis-landtax.jar" version="2.50" />
 	<module file="rptis/rameses-gov-etracs-rptis-landtax-report.jar" version="2.50" />
-	<module file="rptis/rameses-gov-etracs-rptis-transmittal.jar" version="2.50" />
+	<module file="rptis/rameses-gov-etracs-rptis-transmittal.jar" version="2.50"/>
 	<module file="rptis/rameses-gov-etracs-rptis-sync.jar" version="2.50" />
 
     <!-- rptis lgu specific -->
