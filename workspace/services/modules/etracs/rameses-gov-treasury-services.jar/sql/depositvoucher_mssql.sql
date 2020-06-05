@@ -1,40 +1,40 @@
-[getCollectionVoucherFund]
+[getCollectionVoucherFunds]
 select 
-  fund.depositoryfundid as fundid, 
-  sum(cv.totalcash + cv.totalcheck) as amount 
-from collectionvoucher v 
-  inner join collectionvoucher_fund cv on cv.parentid = v.objid 
-  inner join fund on fund.objid = cv.fund_objid 
-where v.depositvoucherid = $P{depositvoucherid}
-group by fund.depositoryfundid 
+  cv.controlno, cvf.fund_objid, cvf.fund_title, 
+  cvf.amount, cvf.totalcash, cvf.totalcheck, cvf.totalcr, 
+  fund.depositoryfundid 
+from collectionvoucher cv 
+  inner join collectionvoucher_fund cvf on cvf.parentid = cv.objid 
+  inner join fund on fund.objid = cvf.fund_objid 
+  left join fund fd on fd.objid = fund.depositoryfundid 
+where cv.depositvoucherid = $P{depositvoucherid} 
+order by cv.controlno, cvf.fund_title 
 
 
-[findCollectionVoucherWithoutDepositoryFund]
-select distinct 
-  fund.objid as fundid, fund.code as fundcode, fund.title as fundtitle
-from collectionvoucher v 
-  inner join collectionvoucher_fund cv on cv.parentid = v.objid 
-  inner join fund on fund.objid = cv.fund_objid 
-where v.depositvoucherid = $P{depositvoucherid} 
-  and fund.depositoryfundid is null 
+[getChecksForDeposit]
+select cv.depositvoucherid, cp.objid as checkid, fund.depositoryfundid as fundid 
+from collectionvoucher cv 
+  inner join remittance r on r.collectionvoucherid = cv.objid 
+  inner join cashreceipt c on c.remittanceid = r.objid 
+  inner join cashreceiptpayment_noncash nc on nc.receiptid = c.objid 
+  inner join checkpayment cp on cp.objid = nc.refid 
+  inner join fund on fund.objid = nc.fund_objid 
+  left join cashreceipt_void v on v.receiptid = c.objid 
+where cv.depositvoucherid = $P{depositvoucherid} 
+  and v.objid is null 
+group by cv.depositvoucherid, cp.objid, fund.depositoryfundid 
+order by cp.objid 
 
 
-[updateChecksForDeposit]
-update cp set 
-    cp.depositvoucherid = $P{depositvoucherid}, 
-    cp.fundid = (
-        select top 1 fund.depositoryfundid from cashreceiptpayment_noncash a, fund 
-        where a.refid = cp.objid and a.amount = cp.amount and fund.objid = a.fund_objid  
-    ) 
-from checkpayment cp  
-where cp.objid in (
-  select nc.refid from cashreceiptpayment_noncash nc 
-      inner join cashreceipt c on c.objid = nc.receiptid 
-      inner join remittance r on r.objid = c.remittanceid 
-      inner join collectionvoucher cv on cv.objid = r.collectionvoucherid 
-      left join cashreceipt_void v on v.receiptid = c.objid
-  where cv.depositvoucherid = $P{depositvoucherid}  and v.objid is null 
-) 
+[getChecksForVerification]
+select 
+  cp.refno, cp.refdate, cp.amount, 
+  bank.objid as bank_objid, cp.bank_name 
+from checkpayment cp 
+  left join bank on bank.objid = cp.bankid 
+where cp.depositvoucherid = $P{depositvoucherid} 
+  and bank.objid is null 
+order by cp.bank_name, cp.refno 
 
 
 [getBankAccountLedgerItems]

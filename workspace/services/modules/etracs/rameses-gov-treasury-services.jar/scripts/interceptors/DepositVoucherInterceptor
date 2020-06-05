@@ -5,13 +5,26 @@ class DepositVoucherInterceptor {
 	@Service("NumberService")
 	def numSvc;
 
-	
+	@DataContext("depositvoucher")
+	def dvEm;
+
+	@DataContext("depositvoucher_fund")
+	def dvfEm;
+
+	@DataContext("collectionvoucher")
+	def cvEm;
+
+	@DataContext("checkpayment")
+	def checkEm;
+
+
 	@After(pattern="QueryService.getNodeList", eval="#{ args[0]._schemaname == 'depositvoucher' }")
 	public void getNodes( evt ) { 
 		def x = evt.args[0];
 		def result = evt.result;
 		result << [  title: 'Open', state:'OPEN' ];
 		result << [  title: 'Posted', state:'POSTED' ];
+		result << [  title: 'Cancelled', state:'CANCELLED' ];
 	}
 
 	@Before(pattern="QueryService.getList", eval="#{ args[0]._schemaname == 'depositvoucher' }")
@@ -52,5 +65,30 @@ class DepositVoucherInterceptor {
 			p.amountinwords = numSvc.doubleToWords( p.amount ).toUpperCase() + " PESOS ONLY";
 		}
 		*/
+	}
+
+	@Before(pattern="PersistenceService.removeEntity", eval="#{ args[0]._schemaname == 'depositvoucher' }" )
+	public void beforeRemove( evt ) {
+		def param = evt.args[0]; 
+		def dv = dvEm.find([ objid: param.objid ]).select('objid,state').first(); 
+		if ( !dv ) return; 
+
+		if ( dv.state.toString().toUpperCase() == 'POSTED' ) 
+			throw new Exception('Delete action is not allowed. Transaction is already posted.'); 
+
+		def uu = [ depositvoucherid: '{NULL}', fundid: '{NULL}' ]; 
+		def findby = [ depositvoucherid: param.objid ]; 
+		checkEm.find( findby ).update( uu ); 
+
+		uu.remove('fundid'); 
+		cvEm.find( findby ).update( uu ); 
+
+		uu.clear(); 
+		uu.state = 'CANCELLED'; 
+		dvEm.find([ objid: param.objid ]).update( uu );
+
+		// inject a temporary findBy data, so that the transaction will not be deleted 
+		// we will only marked the transction as CANCELLED  
+		param.findBy = [ objid: 'CANCELLED-'+ new java.rmi.server.UID() ]; 
 	}
 }

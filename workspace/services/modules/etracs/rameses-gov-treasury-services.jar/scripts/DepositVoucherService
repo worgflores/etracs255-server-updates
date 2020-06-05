@@ -57,45 +57,82 @@ class DepositVoucherService  {
 		m.amount = o.amount;
 		m = dvEm.create( m );
 
-		def dvparam =  [depositvoucherid: m.objid ] ;
+		def dvparam =  [ depositvoucherid: m.objid ] ;
 
 		def str = "('" + o.items.join( "','") + "')";
 		cvEm.where( "objid IN " + str ).update( dvparam );
 
-		//for each collection voucher fund create a deposit voucher fund
-		def list = dvEm.getCollectionVoucherFund( dvparam ); 
-		if ( list.find{ it.fundid == null }) {
-			def wdf = dvEm.findCollectionVoucherWithoutDepositoryFund( dvparam );
-			throw new Exception('Please specify a depository fund for '+ wdf.fundtitle); 
-		} 
+		// get all collection voucher funds 
+		def cvfs = dvEm.getCollectionVoucherFunds( dvparam ); 
+		if ( !cvfs ) throw new Exception('Cannot find the associated Collection Voucher Funds'); 
 
-		list.each {
-			def dvf = [:];
+		//  validate the correctness of data 		
+		cvfs.each{ 
+			def totalamt = (it.totalcash + it.totalcheck + it.totalcr); 
+			if ( totalamt != it.amount ) { 
+				def msg = new StringBuilder(); 
+				msg.append('Amount not balance for '+ it.fund?.title).append('.\n'); 
+				msg.append('Please verify the data of Collection Voucher ').append( it.controlno );
+				throw new Exception( msg.toString()); 
+			} 
+
+			if ( !it.depositoryfundid ) {
+				def msg = new StringBuilder(); 
+				msg.append('Please specify a Depository Fund for ').append( it.fund?.title ); 
+				throw new Exception( msg.toString()); 
+			}
+		}
+
+		def dvf = [:];
+		cvfs.groupBy{ it.depositoryfundid }.each{ k, v-> 
+			def amt = v.sum{( it.totalcash + it.totalcheck )} 
+
+			dvf.clear(); 
 			dvf.parentid = m.objid;
-			dvf.parent = [objid: m.objid];
-			dvf.fundid = it.fundid;
-			dvf.fund = [objid:it.fundid ];
-			dvf.amount = it.amount;
+			dvf.parent = [ objid: m.objid ];
+			dvf.fundid = k;
+			dvf.fund = [ objid: k ];
+			dvf.amount = amt;
 			dvf.amountdeposited = 0;
 			dvf.totaldr = 0;
 			dvf.totalcr = 0;
 			dvf.state = 'OPEN';
-			dvfEm.create( dvf );
+			dvfEm.create( dvf );			
 		}
-		
-		dvEm.updateChecksForDeposit( dvparam );  
+
+		def uu = [:]; 
+		dvEm.getChecksForDeposit( dvparam ).groupBy{ it.checkid }.each{ k,v-> 
+			uu.clear();
+			uu.depositvoucherid = m.objid;
+			if ( v.size() == 1 ) { 
+				uu.fundid = v.first().fundid; 
+				if ( !uu.fundid ) {
+					uu.findid = '{NULL}'; 
+				}
+			}
+			chkPmtEm.find([ objid: k ]).update( uu ); 
+		}
+
+		dvEm.getChecksForVerification( dvparam ).each{
+			if ( !it.bank?.objid ) {
+				def msg = new StringBuilder(); 
+				msg.append('Check Reference No. ').append( it.refno ).append(' ');
+				msg.append('does not have a Bank record mapping. Please verify.')
+				throw new Exception( msg.toString()); 
+			}
+		}
 		return m;
 	}
 
 	@ProxyMethod
 	public void addChecks( def o ) {
 		def str = " ('" + o.list.join("','") + "')";
-		chkPmtEm.where( "objid IN " + str ).update( [fundid: o.fundid ]);
+		chkPmtEm.where( "objid IN " + str ).update([ fundid: o.fundid ]);
 	}
 
 	@ProxyMethod
 	public void removeCheck( def o ) {
-		chkPmtEm.where( "objid = :objid", o ).update( [fundid: "{NULL}" ]);
+		chkPmtEm.where( "objid = :objid", o ).update([ fundid: "{NULL}" ]);
 	}
 
 

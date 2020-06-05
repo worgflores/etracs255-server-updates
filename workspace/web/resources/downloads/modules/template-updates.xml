@@ -1,61 +1,72 @@
 <app>
 <env>
-app.title=ETRACS 2.5 build 05 20200605 patch 255-03013.021a and 255-03019-012 (LGU - San Isidro)
-app.host=192.168.0.253:8070
+app.title=ETRACS 2.5 build 05 20200605 patch v255-03020 / v2.5.5_20190910_2100.patch.etracs.treasury updated(Province of Davao Del Norte)
+app.host=172.16.0.8:8070
 app.cluster=osiris3
 app.context=etracs25
-app.help=http://192.168.0.253:8080/help
+app.help=http://172.16.0.8:8080/help
 app.loader=com.rameses.osiris2.client.OsirisAppLoader
 readTimeout=300000
 connectionTimeout=5000
 filemgmt.enabled=false
 
-ws.host=192.168.0.253:8060
-#res.host=192.168.0.253
+ws.host=172.16.0.8:8060
+#res.host=172.16.0.8
 
-app.custom=sanisidro
-report.custom=sanisidro
+app.custom=davaodelnorte
+report.custom=davaodelnorte
 
-socketio.host=192.168.0.253:7080
+socketio.host=172.16.0.8:7080
 
-entity.app.host=192.168.0.253:8070
+entity.app.host=172.16.0.8:8070
 entity.app.context=etracs25
 </env>
 <modules>
 	<!-- custom libraries -->
-	<module file="custom/gov-lgu-ddn-rptis-report.jar" version="1.01"/>
-	<module file="custom/gov-lgu-ddn-rptis-landtax-taxclearance.jar" version="1.17"/>
-	<module file="custom/gov-lgu-ddn-rptis-landtax-abstractofcollection-report.jar" version="1.04"/>
-	<module file="custom/gov-lgu-sanisidro-treasury.jar" version="1.5"/>
-	<module file="custom/etracs-sanisidro-customapplicatiocompromise.jar" version="1.01"/>
+	
+	<!-- landtax custom report -->
 	<module file="custom/gov-lgu-ddn-rptcompromisestatementofaccount.jar" version="2.55"/>
+	<!-- <module file="custom/gov-lgu-ddn-rptis-report.jar" version="1.08"/> -->
+	<module file="custom/gov-lgu-davaodelnorte.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-rptis-landtax-compromise-report.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-rptis-landtax-abstractofcollection-report.jar" version="2.90"/>
+	<!-- <module file="custom/gov-lgu-ddn-rptis-landtax-abstractrptcollection.jar" version="2.55"/> -->
+	<module file="custom/gov-lgu-ddn-rptis-landtax-taxclearance.jar" version="2.90"/>
 	<module file="custom/gov-lgu-ddn-realtytaxledgerbilling.jar" version="2.55"/>
+	
+	<!-- faas custom report -->
+	<module file="custom/gov-lgu-ddn-taxdecmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-faaslandmodified.jar" version="2.90"/> 
+	<module file="custom/gov-lgu-ddn-faasbldgmodified.jar" version="2.92"/> 
+	<module file="custom/gov-lgu-ddn-faasmachmodified.jar" version="2.95"/> 
+	<module file="custom/gov-lgu-ddn-faasmiscmodified.jar" version="2.90"/> 
 
- 	<module file="custom/gov-lgu-ddn-taxdecmodified.jar" version="2.55"/>
-	<module file="custom/gov-lgu-ddn-noticeofassessmentreport.jar" version="2.55"/>
+	<!-- assessor custom report -->
+	<module file="custom/gov-lgu-ddn-tmcrmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-noticeofcancellationreport.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-noticeofassessmentreport.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-assessmentrolltaxable.jar" version="2.90"/> 
+	<module file="custom/gov-lgu-ddn-assessmentrollexempt.jar" version="2.90"/> 
+	<module file="custom/gov-lgu-ddn-assessmentrollcontinuousexempt.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-assessmentrollcontinuoustaxable.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-reportonrealpropertyassessment.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-monthlyassessmentreport.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-accomplishmentrealpropertyassessmentreport.jar" version="2.90"/>	
+	<module file="custom/gov-lgu-ddn-land_specificclass_listing.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-FAASmasterlistreportmodified.jar" version="2.56"/>
+	<module file="custom/gov-lgu-ddn-ownershiprecordformmodified.jar" version="2.56"/>
+	<!-- assessor certification custom report -->
+	<module file="custom/gov-lgu-ddn-encumbrancesmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-landholdingmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-latestandexistingmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-multiplepropertycertificationmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-nopropertymodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-ownershipmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-verificationfaasmodified.jar" version="2.90"/>
+	<!-- assessor transaction custom report -->
+	<module file="custom/gov-lgu-ddn-subdivisionsummaryreportmodified.jar" version="2.90"/>
+	<module file="custom/gov-lgu-ddn-consolidationsummaryreportmodified.jar" version="2.90"/>
 
-	<module file="custom/gov-lgu-ddn-faasbldgmodified.jar" version="2.56"/>
-	<module file="custom/gov-lgu-ddn-faaslandmodified.jar" version="2.55"/>
-	<module file="custom/gov-lgu-ddn-faasmachmodified.jar" version="2.59"/>
-	<module file="custom/gov-lgu-ddn-faasmiscmodified.jar" version="2.55"/>
-
-	<module file="custom/gov-lgu-ddn-assessmentrolltaxable.jar" version="2.55"/> 
-	<module file="custom/gov-lgu-ddn-assessmentrollexempt.jar" version="2.55"/> 
-	<module file="custom/gov-lgu-ddn-assessmentrollcontinuousexempt.jar" version="2.55"/>
-	<module file="custom/gov-lgu-ddn-assessmentrollcontinuoustaxable.jar" version="2.55"/>
-	<module file="custom/gov-lgu-ddn-reportonrealpropertyassessment.jar" version="2.55"/>
-
-	<module file="custom/gov-lgu-ddn-monthlyassessmentreport.jar" version="2.55"/>
-	<module file="custom/gov-lgu-ddn-land_specificclass_listing.jar" version="2.55"/>
-
-	<module file="custom/gov-lgu-ddn-tmcrmodified.jar" version="1.00"/>
-
-	<module file="custom/gov-lgu-ddn-noticeofcancellationreport.jar" version="2.58"/>
-	<module file="custom/gov-lgu-ddn-consolidationsummaryreportmodified.jar" version="2.58"/>
-	<module file="custom/gov-lgu-ddn-subdivisionsummaryreportmodified.jar" version="2.58"/>
-	<module file="custom/gov-lgu-ddn-landwithimprovement.jar" version="1.00"/>
-
-	<module file="custom/gov-lgu-sanisidro.jar" version="2.55"/>
 
 	<!-- core -->
 	<module file="core/osiris2-client-themes.jar" version="2.50"/>
@@ -120,13 +131,11 @@ entity.app.context=etracs25
 	<module file="rptis/rameses-gov-etracs-rptis-sync.jar" version="2.50" />
 
     <!-- rptis lgu specific -->
-	<module file="rptis/rameses-gov-etracs-rptis-municipality.jar" version="2.50" />
+	<module file="rptis/rameses-gov-etracs-rptis-province.jar" version="2.50" />
+	<module file="rptis/rameses-gov-etracs-rptis-landtax-province.jar" version="2.50" />
 	<module file="rptis/rameses-gov-etracs-rptis-landtax-auction.jar" version="2.50" />
 
 	<!-- queue -->
 	<module file="queue/rameses-queueing.jar" version="2.50"/> 
-
-	<!-- ctc -->
-	<module file="ctc/rameses-gov-etracs-ctc.jar" version="2.50"/>	
 </modules>
 </app>
