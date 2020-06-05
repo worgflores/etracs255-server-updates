@@ -23,10 +23,12 @@ CREATE TABLE `business_closure` (
 ; 
 */
 
--- create UNIQUE index `uix_code` on businessrequirementtype (`code`) ; 
--- create UNIQUE index `uix_title` on businessrequirementtype (`title`) ; 
-
--- create UNIQUE index `uix_name` on businessvariable (`name`) ;
+create UNIQUE index `uix_code` on businessrequirementtype (`code`) 
+; 
+-- create UNIQUE index `uix_title` on businessrequirementtype (`title`) 
+-- ;
+create UNIQUE index `uix_name` on businessvariable (`name`) 
+;
 
 CREATE TABLE `cashreceipt_group` ( 
    `objid` varchar(50) NOT NULL, 
@@ -77,9 +79,9 @@ CREATE TABLE `entity_mapping` (
 ; 
 */
 
--- alter table lob add _ukey varchar(50) not null default '';
--- update lob set _ukey=objid where _ukey='' ;
--- create unique index uix_name on lob (name, _ukey);
+alter table lob add _ukey varchar(50) not null default '';
+update lob set _ukey=objid where _ukey='' ;
+create unique index uix_name on lob (name, _ukey);
 
 DROP TABLE IF EXISTS `paymentorder`
 ;
@@ -159,4 +161,5 @@ CREATE TABLE `sync_data_pending` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ; 
 
--- CREATE UNIQUE INDEX `uix_ruleset_name` ON sys_rule (`ruleset`,`name`);
+CREATE UNIQUE INDEX `uix_ruleset_name` ON sys_rule (`ruleset`,`name`)
+;
