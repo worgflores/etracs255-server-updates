@@ -34,6 +34,7 @@
 		<field name="respcenter_objid" /> 
 		<field name="respcenter_name" indexed="true" caption="RespCenter"/> 
 		<field name="cost" /> 
+		<field name="salecost" /> 
 
 		<complex name="af" ref="af" jointype="many-to-one" includefields="objid,title,formtype,serieslength" required="false">
 			<key field="afid" target="objid" />

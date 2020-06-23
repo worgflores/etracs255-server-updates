@@ -2,9 +2,6 @@ import com.rameses.annotations.*;
 
 class CollectionVoucherInterceptor {
 
-	@Service("NumberService")
-	def numSvc;
-
 	@DataContext('remittance')
 	def rem_db;
 
@@ -14,6 +11,10 @@ class CollectionVoucherInterceptor {
 	@ActiveDB('income_summary')
 	def inc_db;
 	
+	@Service('CollectionVoucherJevService')
+	def jevSvc; 
+
+
 	@After(pattern="QueryService.getNodeList", eval="#{ args[0]._schemaname == 'collectionvoucher' }")
 	public void afterGetNodes( evt ) { 
 		def x = evt.args[0];
@@ -47,19 +48,6 @@ class CollectionVoucherInterceptor {
 		cvf_db.find([ parentid: param.objid ]).delete(); 
 	}
 
-	@After(pattern="PersistenceService.read", eval="#{ args[0]._schemaname == 'collectionvoucher' }" )
-	public void afterRead( evt ) {
-		def p = evt.result;
-		/*
-		if( p.amount < 1 ) { 
-			def amount = Long.parseLong( p.amount.toString().split("\\.")[1] )
-			p.amountinwords = numSvc.doubleToWords( amount ).toUpperCase() + " CENTAVOS";
-		} else {
-			p.amountinwords = numSvc.doubleToWords( p.amount ).toUpperCase() + " PESOS ONLY";
-		}
-		*/
-	}
-
 	@After(pattern="CollectionVoucherService.post", index=-9999)
 	public void afterPost( evt ) { 
 		def res = evt.result; 
@@ -68,5 +56,8 @@ class CollectionVoucherInterceptor {
 		def m = [collectionvoucherid: res.objid]; 
 		inc_db.clear( m );
 		inc_db.post( m );  
+
+		// post to JEV in async mode 
+		jevSvc.postAsync([ objid: res.objid ]); 
 	} 
 }

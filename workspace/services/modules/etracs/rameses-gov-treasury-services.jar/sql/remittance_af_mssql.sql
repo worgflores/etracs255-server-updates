@@ -206,3 +206,19 @@ from cashreceipt c
 where c.remittanceid = $P{remittanceid}  
 	and c.state = 'CANCELLED' 
 	and af.formtype = 'serial' 
+
+
+[getAFSummary]
+select * 
+from ( 
+    select 
+        raf.remittanceid, raf.controlid, afc.afid, afc.stubno, afc.unit, af.formtype, 
+        raf.issuedstartseries, raf.issuedendseries, raf.qtyissued, raf.qtycancelled, 
+        raf.endingstartseries, raf.endingendseries, raf.qtyending, afc.dtfiled, afc.startseries, 
+        (case when raf.qtyissued > 0 or raf.qtycancelled > 0 then 0 else 1 end) as indexlevel   
+    from remittance_af raf, af_control afc, af 
+    where raf.remittanceid = $P{remittanceid}  
+        and afc.objid = raf.controlid 
+        and af.objid = afc.afid 
+)t1 
+order by indexlevel, afid, dtfiled, startseries 

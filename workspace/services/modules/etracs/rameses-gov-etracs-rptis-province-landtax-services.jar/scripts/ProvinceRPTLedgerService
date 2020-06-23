@@ -1,0 +1,64 @@
+import com.rameses.osiris3.xconnection.*;
+import com.rameses.annotations.*;
+import com.rameses.common.*;
+
+class ProvinceRPTLedgerService
+{   
+	@Env 
+	def env 
+
+	@Service('RPTMainSyncService')
+	def syncSvc
+
+    @Service('RPTLedgerSyncService')
+    def  ledgerSyncSvc
+
+    @Service('RPTLedgerSyncSupportService')
+    def supportSvc     
+
+	@Service('FAASService')
+	def faasSvc 
+
+	@Service('RPTLedgerService')
+	def ledgerSvc 
+
+
+	@ProxyMethod
+	public def createLedger( faas ) {
+        faas = faasSvc.getFaasByTdNo(faas.tdno);
+        if (!faas)
+            throw new Exception('TD No. ' + faas.tdno + ' is invalid or FAAS does not exist.');
+            
+        def ledger = null;
+        try{
+            ledger = ledgerSvc.getLedgerByFaasId( faas.objid )
+        }
+        catch(e){
+            //
+        }
+        if (ledger)
+            throw new Exception('Ledger for FAAS ' + faas.tdno + ' has already been created.');
+            
+        return ledgerSvc.postNewLedger(faas);
+	}
+
+
+	@ProxyMethod
+	public def syncLedger(ledger) {
+		def mapping = supportSvc.getLedgerMapping(ledger)
+		mapping.idinfo = ledgerSyncSvc.getItemsObjid(ledger)
+
+		def syncdata = [:]
+        syncdata.refid =  ledger.objid 
+        syncdata.reftype = 'rptledger'
+        syncdata.action = 'SYNCDATA'
+        syncdata.remote = mapping.remote 
+        syncdata.data = mapping
+		def remoteledger = syncSvc.send(syncdata)
+
+		supportSvc.resolveIds(ledger, remoteledger)
+		ledgerSyncSvc.sync(remoteledger)
+		return [status:'OK']
+	}
+
+}

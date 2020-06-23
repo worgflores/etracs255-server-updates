@@ -1,12 +1,4 @@
 @echo off
-setlocal enableDelayedExpansion
-if exist env.conf (
-	for /f "delims=" %%x in (env.conf) do (
-		set str=%%x
-		if not "!str:~0,1!" == "#" set "%%x" 
-	) 
-) 
-
 rem Specify the java home directory 
 rem set JAVA_HOME=@javahome
 
@@ -16,13 +8,14 @@ if not "%JAVA_HOME%" == "" set JAVA=%JAVA_HOME%\bin\java
 
 rem This will be the run directory
 set RUN_DIR=%cd%
+
 rem Move up...
 cd ..
+
 rem This will be the base directory
 set BASE_DIR=%cd%
 
 set JAVA_OPTS="-Xmx4096m -Dosiris.run.dir=%RUN_DIR% -Dosiris.base.dir=%BASE_DIR%"
-
 
 echo.
 echo.========================================================================
@@ -37,5 +30,4 @@ echo.========================================================================
 echo.
 
 "%JAVA%" "%JAVA_OPTS%" -cp lib/*;. com.rameses.main.bootloader.MainBootLoader
-endlocal
 pause

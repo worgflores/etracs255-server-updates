@@ -91,6 +91,7 @@ class AFTxnService  {
 			afc.suffix = o.suffix;
 			afc.batchno = batchno;
 			afc.cost = afi.cost;
+			afc.salecost = 0.0;
 			afc.allocation = o.allocation;
 
 			def ref = [:];
@@ -154,24 +155,50 @@ class AFTxnService  {
 	public void revertBatch( o ) { 
 		if( !o.aftxnitemid ) throw new Exception("AFTxnService.revertBatch error. aftxnitemid is required ");
 		
-		def lockid = new UID().toString();
+		def wheres = []; 
+		def wheremap = [:]; 
+		if ( o.batchref ) { 
+			wheremap.batchref = o.batchref; 
+			wheres << 'parent.batchref = :batchref'
+		}
+		if ( o.batchno ) { 
+			wheremap.batchno = o.batchno; 
+			wheres << 'parent.batchno = :batchno'
+		}
+
 		def p = [ aftxnitemid: o.aftxnitemid ];
-		def afcs = afControlDetail.find( p ).select('controlid').list(); 
+		def afcdEm = afControlDetail.find( p ).select('objid,controlid'); 
+		if ( wheres ) {
+			afcdEm.where( wheres.join(' AND '), wheremap ); 
+			wheres.clear(); 
+		}
+
+		def afcs = afcdEm.list(); 
+		wheremap.clear(); 
+		p.clear(); 
+
+		def lockid = new UID().toString();
 		afcs.each{ a-> 
 			afControl.find([ objid: a.controlid ]).update([ lockid: lockid, currentdetailid:'{NULL}' ]);
 		}
-		afControlDetail.find( p ).delete();
+
 		afcs.each{ a-> 
-			def afd = afControlDetail.select('objid').find([ controlid: a.controlid ]).orderBy(' txndate desc, refdate desc ').first(); 
+			afControlDetail.find([ objid: a.objid ]).delete(); 
+
+			def afd = afControlDetail.select('objid').find([ controlid: a.controlid ]).orderBy('refdate desc, txndate desc, indexno desc').first(); 
 			afControl.find([ objid: a.controlid ]).update([ currentdetailid: (afd.objid ? afd.objid : '{NULL}')]); 
 
 			//we need to re-update based on the updated current detail id 
-			def m = [ currentseries: '{currentdetail.endingstartseries}', endseries: '{currentdetail.endingendseries}' ]; 
+			def m = [ salecost: 0.0 ]; 
+			m.currentseries = '{currentdetail.endingstartseries}'; 
+			m.endseries =  '{currentdetail.endingendseries}'; 
 			if ( o.txntype == 'ISSUE' ) m.state = 'OPEN'; 
 
 			afControl.find([ objid: a.controlid ]).update( m ); 
 		} 
-		aftxnItem.find([ objid: o.aftxnitemid ]).update([ qtyserved: 0 ]);
+
+		def count = afControlDetail.find([ aftxnitemid: o.aftxnitemid ]).select('cnt:{COUNT(objid)}').val(); 
+		aftxnItem.find([ objid: o.aftxnitemid ]).update([ qtyserved: count ]);
 	}	
 
 	@ProxyMethod
@@ -255,7 +282,7 @@ class AFTxnService  {
 
 
     @ProxyMethod
-	public def post( def o ) {
+	public def post( o ) {
 		def ar = aftxn.find([ objid: o.objid ]).first(1);
 		if ( ar.items.sum{ it.qtyserved } == 0 ) 
 			throw new Exception("There must be at least one qty issued");	
@@ -277,4 +304,27 @@ class AFTxnService  {
 		aftxn.find([ objid: ar.objid ]).update([ state: 'POSTED' ]);
 	}
 
+
+	@ProxyMethod
+	public def changeSaleCost( param ) {
+		if ( !param.aftxnitemid ) throw new Exception('aftxnitemid parameter is required'); 
+		if ( !param.batchref ) throw new Exception('batchref parameter is required'); 
+		if ( !param.batchno ) throw new Exception('batchno parameter is required'); 
+		if ( param.salecost == null ) throw new Exception('batchno parameter is required'); 
+		if ( param.salecost < 0 ) throw new Exception('salecost must be greater than or equal to zero'); 
+
+		def wheresql = 'parent.batchref = :batchref AND parent.batchno = :batchno'; 
+		def wheremap = [batchref: param.batchref, batchno: param.batchno]; 
+		def findby = [ aftxnitemid: param.aftxnitemid ]; 
+		def afdEm = afControlDetail.find( findby ).select('controlid'); 
+		def afcs = afdEm.where( wheresql, wheremap ).list(); 
+
+		findby.clear(); 
+
+		afcs.each{ 
+			findby.objid = it.controlid; 
+			afControl.find( findby ).update([ salecost: param.salecost ]); 
+		} 
+		return param; 
+	}
 }

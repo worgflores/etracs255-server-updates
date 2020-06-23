@@ -59,8 +59,12 @@ class DepositVoucherRCDReportService {
 
 		result.remittances = rcd_em.getRemittances( p ); 
 		result.amount = result.remittances.sum{ it.amount } 
-		result.amount = (result.amount ? result.amout : 0.0); 
+		result.amount = (result.amount ? result.amount : 0.0); 
 		result.amountinwords = numSvc.doubleToWords( result.amount ).toUpperCase() + " PESOS"; 
+
+//		def dtbean = new com.rameses.util.DateBean( dvinfo.controldate ); 
+//		p.startdate = new java.sql.Date( dtbean.date.time ); 
+//		p.enddate   = new java.sql.Date( dtbean.add('1d').time ); 
 
 		if ( templateid == 'b' ) {
 			result.collectiontypes = rcd_em.getReceipts( p ); 

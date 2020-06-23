@@ -5,7 +5,7 @@
 		<field name="controlno" required="true" caption="Control No" searchable="true" indexed="true" />
 		<field name="controldate" required="true"  caption="Remittance Date" indexed="true" type="date"/>
 
-		<field name="dtposted" required="true"/>
+		<field name="dtposted" required="true" caption="TxnDate"/>
 		<field name="collector_objid" required="true"/>
 		<field name="collector_name" required="true" caption="Collector" searchable="true" indexed="true" />
 		<field name="collector_title" required="true"/>

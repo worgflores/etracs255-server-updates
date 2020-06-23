@@ -1,85 +1,99 @@
-import com.rameses.annotations.*
-import com.rameses.common.*
-import java.rmi.server.UID;
+import com.rameses.annotations.*;
+import com.rameses.common.*;
 import com.rameses.util.*;
 import com.rameses.io.*;
-import com.rameses.services.extended.*;
-
+import com.rameses.services.extended.ActiveCrudListService;
+import java.rmi.server.UID;
 
 class UsergroupService extends ActiveCrudListService {
-
-	@ActiveDB(value="usergroup", em="admin")
-	def	em; 
 
 	@Env
 	def env;
 
+	@ActiveDB(value="usergroup", em="admin")
+	def	em; 
+
 	String schemaName = "usergroup";
 	String subSchemaName = "member";
 	
-	String pagingKeys = 'ug.objid'
+	String pagingKeys = 'ug.objid';
 
 	@ProxyMethod
-	public def getNodes( def o ) {
-		o.userid = env.USERID;
+	public def getNodes( o ) {
+		o.userid = env.USERID; 
 		o.usergroupfilter = "";
-		if (o.usergroupid) o.domain = o.usergroupid;
+		if ( o.usergroupid ) {
+			o.domain = o.usergroupid; 
+		} 
 
-		def list;
-		if( o.root )
-			list = em.getRootNodes(o);
-		else
-			list = em.getChildNodes(o);
-		list.each { 
-			if (o.root) it.folder = true;
-			if (it.filetype == 'usergroup-folder') {
-				it.children = [[filetype:'usergroup']];
-			}
+		def list = null;
+		if ( o.root ) {
+			list = em.getRootNodes( o );
 		}
-		return list;
-	}
+		else {
+			list = em.getChildNodes( o );
+		} 
+
+		list.each { 
+			if ( o.root ) it.folder = true;
+			if ( it.filetype == 'usergroup-folder') {
+				it.children = [[filetype:'usergroup']];
+			} 
+		} 
+		return list; 
+	} 
 	
 	
 	/*****
 	* display the member columns
 	***/
 	@ProxyMethod
-	public def getColumns( def o ) {
-		o.userid = env.USERID;
-		return[
-			[name:'user.username', caption:'User Name' ],
-			[name:'user.lastname', caption:'Last Name' ],
-			[name:'user.firstname', caption:'First Name' ],
-			[name:'org.name', caption:'Org' ],
-			[name:'securitygroup.name', caption:'Security Group' ],
-		];
-	}
+	public def getColumns( o ) { 
+		o.userid = env.USERID; 
+		return[ 
+			[name:'user.username', caption:'User Name', width:150, maxWidth: 200 ], 
+			[name:'user.name', caption:'Full Name', width:180, maxWidth: 250 ], 
+			[name:'usergroup.objid', caption:'User Group', width: 180, maxWidth: 200 ], 
+			[name:'org.name', caption:'Org' ], 
+			[name:'securitygroup.name', caption:'Security Group' ], 
+		]; 
+	} 
 	
-	public void beforeList( def o ) {	
-		o.userid = env.USERID;
-		o.usergroupfilter = "";
-		if (o.usergroupid) o.usergroupfilter = ' AND ugm.usergroup_objid=$P{usergroupid} ';
+	public void beforeList( o ) { 
+		o.userid = env.USERID; 
+		o.usergroupfilter = ""; 
+		if ( o.usergroupid ) { 
+			o.usergroupfilter = ' AND ugm.usergroup_objid=$P{usergroupid} '; 
+		} 
+	} 
+
+	public void afterList( param, result ) { 
+		result.each{ 
+			if ( !it.user ) return; 
+
+			def names = [it.user.firstname, it.user.middlename, it.user.lastname].findAll{( it )} 
+			it.user.name = names.join(' '); 
+			names.clear(); 
+		}
 	}
 	
 	@ProxyMethod 
-	public void updatePermission(def params) {
+	public void updatePermission( params ) { 
 		if (!params.objid) throw new Exception('Please specify objid'); 
 
-		def info = em.read(params, 'member');  
-		if (!info) throw new Exception("'"+params.objid+"' usergroup member record not found"); 
+		def info = em.read(params, 'member'); 
+		if ( !info ) throw new Exception("'"+params.objid+"' usergroup member record not found"); 
 		
 		info.exclude = params.exclude; 
 		em.update(info, "member"); 
 	} 
 
 
-	public void approve ( data ) {} 	
+	public void approve ( data ) {
+	} 
 
 	@ProxyMethod
 	public def getPermissions(o) {
 		return em.getPermissions(o);
 	}
-
 }
-
-

@@ -69,8 +69,9 @@ class RemittanceInterceptor {
 	}	
 
 	@After(pattern="PersistenceService.read", eval="#{ args[0]._schemaname == 'remittance' }" )
-	public void afterRead(def evt) {
+	public void afterRead( evt ) {
 		def p = evt.result;
+		if ( !p ) throw new Exception('Remittance transaction no longer exist'); 
 
 		if( p.amount < 1 ) { 
 			def amount = Long.parseLong( p.amount.toString().split("\\.")[1] )
@@ -78,7 +79,15 @@ class RemittanceInterceptor {
 		} else {
 			p.amountinwords = numSvc.doubleToWords( p.amount ).toUpperCase() + " PESOS ONLY";
 		}
-	}
+
+		p.afsummaries = remaf_db.getAFSummary([ remittanceid: p.objid ]); 
+		p.afsummaries.each{
+			if ( it.formtype != 'serial' ) {
+				it.issuedstartseries = it.issuedendseries = null; 
+				it.endingstartseries = it.endingendseries = null; 
+			}
+		}
+	} 
 
 	@Before( pattern="PersistenceService.removeEntity", eval="#{args[0]._schemaname == 'remittance'}"  )
 	public void beforeDelete( evt ) {

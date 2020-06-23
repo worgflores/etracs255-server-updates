@@ -16,6 +16,8 @@
 		<field name="leftindex" type="integer"/>
 		<field name="rightindex" type="integer"/>
 		<field name="level" type="integer"/>
+
+		<field name="grouppath" expr="''" caption="GroupPath"/> 
 	</element>
 
 </schema>

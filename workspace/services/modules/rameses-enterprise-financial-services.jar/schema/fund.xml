@@ -3,7 +3,7 @@
 	<element tablename="fund">
 		<field name="objid" primary="true" prefix="FUND"/>	
 		<field name="groupid" caption="Group" searchable="true"/>
-		<field name="state" required="true"/>
+		<field name="state" required="true" caption="Status"/>
 		<field name="code" required="true" caption="Code" searchable="true"/>
 		<field name="title" required="true" caption="Title" searchable="true"/>
 		<field name="type" />

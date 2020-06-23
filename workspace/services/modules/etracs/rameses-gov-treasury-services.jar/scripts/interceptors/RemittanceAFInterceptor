@@ -26,11 +26,11 @@ class RemittanceAFInterceptor {
 		def p = [ remittanceid: result.objid ]; 
 		def afs = remaf_em.getBuildAFs( p ); 
 		afs.each{
+			it.qtycancelled = (it.qtycancelled == null ? 0 : it.qtycancelled);
 			it.qtyreceived = (it.qtyreceived == null ? 0 : it.qtyreceived);
 			it.qtybegin = (it.qtybegin == null ? 0 : it.qtybegin);
 			it.qtyissued = (it.qtyissued == null ? 0 : it.qtyissued);
 			it.qtyending = (it.qtyending == null ? 0 : it.qtyending);
-			it.qtycancelled = (it.qtycancelled == null ? 0 : it.qtycancelled);
 		}
 
 		// initiate locked to the affected af controls 

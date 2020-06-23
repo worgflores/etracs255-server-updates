@@ -42,6 +42,7 @@ class AFInventoryService {
 			m.state = 'DRAFT';
 			m.unit = afc.unit;
 			m.cost = afc.cost;
+			m.salecost = 0.0;
 
 			if ( ref.txntype == 'FORWARD' ) {
 				m.owner = ref.issueto;
@@ -162,7 +163,8 @@ class AFInventoryService {
 			d.issuedto = [objid: null, name: null]; 
 			u.state = 'OPEN';
 
-		} else if ( ref.reftype == 'REMITTANCE') {
+		} 
+		else if ( ref.reftype == 'REMITTANCE') {
 			d.beginstartseries = ref.startseries;
 			d.beginendseries = afc.endseries;  
 			d.qtybegin = (d.beginendseries.toInteger() - d.beginstartseries.toInteger() ) +1;
@@ -179,8 +181,6 @@ class AFInventoryService {
 			u.remove('state'); 
 		} 
 	
-
-
 		d = afDetail.create( d ); 
 		oldref.objid = d.objid;
 

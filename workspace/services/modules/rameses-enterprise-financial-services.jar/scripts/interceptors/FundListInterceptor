@@ -1,8 +1,6 @@
 import com.rameses.annotations.*;
+import com.rameses.common.*;
 import com.rameses.util.*;
-import java.rmi.server.*;
-import com.rameses.common.*
-
 
 class FundListInterceptor  {
 
@@ -11,7 +9,7 @@ class FundListInterceptor  {
 
 
 	@After(pattern="QueryService.getNodeList", eval="#{ args[0]._schemaname == 'fund' }")
-	public def getNodeList(evt) {
+	public def getNodeList( evt ) {
 		def result = evt.result;
 		
 		def list = grpEm.where("1=1").orderBy("indexno").list();
@@ -22,7 +20,7 @@ class FundListInterceptor  {
 
 
 	@Before(pattern="QueryService.getList", eval="#{ args[0]._schemaname == 'fund' }")
-	public void loadList(def evt) {
+	public void loadList( evt ) {
 		def o = evt.args[0];
 		if( !o.node?.groupid ) return;
 

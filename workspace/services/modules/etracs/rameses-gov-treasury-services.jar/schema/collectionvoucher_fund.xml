@@ -10,6 +10,7 @@
 
 		<field name="totalcash" type="decimal"/>
 		<field name="totalcheck" type="decimal"/>
+		<field name="totalcr" type="decimal"/>
 		
 		<complex name="cashbreakdown" serializer="default" type="list" />
 
