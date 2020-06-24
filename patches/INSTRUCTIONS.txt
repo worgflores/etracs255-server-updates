@@ -1,0 +1,77 @@
+------------------------
+2020-06-24: ETRACS PATCH
+------------------------
+
+01. Copy the folder "{etracs255-server-updates}/bin" to "{ETRACS_SERVER}". 
+    Merge and overwrite existing files and folders. 
+
+02. Delete the folder "{ETRACS_SERVER}/lib/anubis.lib" 
+
+03. Copy the folder "{etracs255-server-updates}/lib" to "{ETRACS_SERVER}". 
+    Merge and overwrite existing files and folders. 
+
+04. Go to folder "{ETRACS_SERVER}/workspace/services/apps/etracs25" 
+
+    04.01  Delete the file "adapters/queue"
+
+
+05. Go to folder "{ETRACS_SERVER}/workspace/services/apps/etracs25" 
+
+    05.01  Delete the file "modules.conf.d/plugins_queue.conf"
+
+
+06. Go to folder "{ETRACS_SERVER}/workspace/services/modules" 
+
+    06.01  Delete the following folders: 
+
+           * 01-rameses-enterprise-admin-services.jar
+           * 02-desktop-client-services.jar
+           * 02-mobile-client-services.jar
+           * 02-web-client-services.jar
+           * 03-rameses-rule-services.jar
+           * 03-rameses-workflow-services.jar
+
+           * rameses-enterprise-entity-services.jar
+           * rameses-enterprise-financial-services.jar
+           * rameses-enterprise-services.jar
+           * rameses-treasury-common-services.jar
+
+           * notification/rameses-notification-proxy-services.jar
+           * notification/rameses-notification-services.jar
+           
+           * plugins/rameses-queue-services.jar
+
+
+    06.02  Delete the folder "etracs" 
+
+
+07. Go to folder "{ETRACS_SERVER}/workspace/web/resources/downloads"
+
+    07.01  Rename the folder "modules" to "modules.bak2" 
+
+
+08. Copy the folder "{etracs255-server-updates}/workspace" to "{ETRACS_SERVER}". 
+    Merge and overwrite existing files and folders. 
+
+09. Go to folder "{ETRACS_SERVER}/workspace/web/resources/downloads/modules"
+
+    09.01  Rename the file "template-updates.xml" to "updates.xml" 
+
+
+10. Stop ETRACS Server 
+
+11. Open Navicat
+
+    11.01  Connect to etracs main database 
+    11.02  Execute the following patch scripts: 
+
+           * v255_20200528_001.patch.etracs
+           * v255_20200603_001.patch.etracs
+           * v255_20200604_001.patch.etracs
+           * v255_20200606-12.patch.etracs
+
+12. Start ETRACS Server 
+
+13. Close all etracs client and open a new one to download the updates.
+
+14. Monitoring on the new updates...

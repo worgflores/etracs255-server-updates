@@ -2,6 +2,8 @@
 alter table aftxn add lockid varchar(50) null 
 ; 
 
+-- if an error 121 occurred meaning constraint is already exist 
+-- you can confirmed this by executing SHOW ENGINE INNODB STATUS 
 alter table af_control add constraint fk_af_control_afid 
 	foreign key (afid) references af (objid) 
 ; 
@@ -29,9 +31,6 @@ order by (case when af.formtype='serial' then 0 else 1 end), af.objid
 
 alter table af_control add salecost decimal(16,2) not null default '0.0'
 ;
-
--- update af_control set salecost = cost where state = 'SOLD' and cost > 0 and salecost = 0 
--- ; 
 
 
 insert into sys_usergroup (
